@@ -92,13 +92,19 @@ At the end of the `execute()` function, a familiar value is returned, `Ok(ExecOu
 
 <br>
 
-## MerkleUnwindStage
+## MerkleStage
 
-The `MerkleUnwindStage` is responsible for unwinding the Merkle Patricia trie when reorgs occur or when there's a need to roll back state changes. This ensures the trie remains consistent with the chain's canonical history by reverting changes beyond the unwind point. It typically runs before the hashing stages to unwind trie state during reorgs or rollbacks.
+The `MerkleStage` is responsible for computing and maintaining the Merkle Patricia trie state root. It is implemented as a single stage with two operational modes:
 
-## MerkleExecuteStage
+### MerkleStage::Unwind
 
-The `MerkleExecuteStage` runs after `AccountHashingStage` and `StorageHashingStage` and is responsible for constructing or updating the state root based on the latest hashed account and storage data. It processes state changes from executed transactions and maintains the state root included in block headers.
+The unwind mode (`MerkleStage::Unwind`) is responsible for unwinding the Merkle Patricia trie when reorgs occur or when there's a need to roll back state changes. This ensures the trie remains consistent with the chain's canonical history by reverting changes beyond the unwind point. It runs **before** the hashing stages to unwind trie state during reorgs or rollbacks.
+
+### MerkleStage::Execution
+
+The execution mode (`MerkleStage::Execution`) runs **after** `AccountHashingStage` and `StorageHashingStage` and is responsible for constructing or updating the state root based on the latest hashed account and storage data. It processes state changes from executed transactions and maintains the state root included in block headers.
+
+The stage can operate in incremental mode for smaller block ranges or perform a full rebuild when catching up over a large number of blocks, controlled by the `rebuild_threshold` and `incremental_threshold` configuration options.
 
 <br>
 
