@@ -714,7 +714,7 @@ impl<Payload> BuildOutcome<Payload> {
         }
     }
 
-    /// Consumes the type and returns the payload if the outcome is `Better` or `Freeze`.
+    /// Returns a reference to the payload if the outcome is `Better` or `Freeze`.
     pub const fn payload(&self) -> Option<&Payload> {
         match self {
             Self::Better { payload, .. } | Self::Freeze(payload) => Some(payload),
